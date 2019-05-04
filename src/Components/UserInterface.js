@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Header, Divider } from 'semantic-ui-react';
+import { Button, Header, Divider, Message } from 'semantic-ui-react';
 import axios from 'axios';
 
 export class UserInterface extends React.Component {
@@ -70,18 +70,34 @@ export class UserInterface extends React.Component {
     }
 
     render() {
-
+        console.log(this.state.user);
         return <div className="user-info">
+                {
+                    !this.state.user.validate ?
+                    <Message negative>
+                        <Message.Header>Unvalidated Account</Message.Header>
+                        <p>Please validate your email address</p>
+                        <Button color="blue">Validate</Button>
+                    </Message>
+                    : null
+                }                
                 <Header as="h1">
                 Hi there!
-                <Button floated="right" onClick={this.props.logOut}>Log out</Button>
+                    <Button floated="right" onClick={this.props.logOut}>Log out</Button>
                 </Header>
                 <Divider hidden />
+                <Header as="h3">Email</Header>
+                <p>{this.state.user.email}</p>
                 <Header as="h3">PushToken</Header>
                 <p>{this.state.user.pushToken}</p>
                 <Header as="h3">AdminToken</Header>
                 <p>{this.state.user.adminToken}</p>
+                <Header as="h3">Receivers Total</Header>
+                <p>{this.state.user.subsribers ? this.state.user.subsribers.length : 0}</p>
+                <Divider hidden />
                 <Button onClick={this.refreshToken}>Refresh Token</Button>
+                {/* <Button></Button> */}
+                <Button color="red">Delete Account</Button>
             </div>
 
     }
