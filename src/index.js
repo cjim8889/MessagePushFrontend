@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Header, Divider } from 'semantic-ui-react';
-import { ButtonsPair } from './Components/ButtonsPair'; 
-import { LoginForm } from './Components/LoginForm';
-import { UserInterface } from './Components/UserInterface';
+import ButtonsPair from './Components/ButtonsPair'; 
+import LoginForm from './Components/LoginForm';
+import UserInterface from './Components/UserInterface';
+import SignupForm from './Components/SignupForm';
 import 'semantic-ui-css/semantic.min.css';
 import './Static/css/main.css'
 
@@ -36,7 +37,7 @@ class App extends React.Component {
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.loadLocalState();
     }
 
@@ -65,7 +66,7 @@ class App extends React.Component {
     }
 
     signUpClicked(e) {
-
+        this.setState({signupFormVisibility: true, mainButtonsVisibility: false});
     }
 
     cancelClicked() {
@@ -96,7 +97,12 @@ class App extends React.Component {
             }
             {
                 this.state.isLoggedIn ?
-                <UserInterface userToken={this.state.userToken} logOut={this.logOut}></UserInterface>
+                <UserInterface userToken={this.state.userToken} onLogOut={this.logOut}></UserInterface>
+                : null
+            }
+            {
+                this.state.signupFormVisibility ?
+                <SignupForm onCancel={this.cancelClicked}></SignupForm>
                 : null
             }
         </Container>

@@ -1,74 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Message } from 'semantic-ui-react';
 import axios from 'axios';
 
-export class LoginForm extends React.Component {
 
-    constructor(props) {
-        super(props);
+export default function LoginForm(props) {
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [logInFailed, setLogInFailed] = useState(false);
 
-        this.state = { email: '', password: '', logInFailed: false };
-
-        this.onChange = this.onChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-        this.logInFailed = this.logInFailed.bind(this);
+    function handleEmailChange(e) {
+        setEmail(e.target.value);
     }
 
-    onChange = (e) => {
-        this.setState({ [e.target.name] : e.target.value });
+    function handlePasswordChange(e) {
+        setPassword(e.target.value);
+    }
+    
+    function handleLogInSuccess(token) {
+        props.onSuccess(token);
     }
 
-    onSubmit = async (e) => {
-        
-        var email = this.state.email;
-        var password = this.state.password;
+    function handleLogInFailure(status) {
+        setLogInFailed(true);
+    }
 
-        try {
-            let response = await axios.get("https://localhost:5001/api/users/login", 
+    async function handleLogIn(e) {        
+        let response = await axios.get("http://localhost:5000/api/users/login", 
             {
                 crossDomain: true,
                 params : {
                     email,
                     password
-                }
+                },
+                validateStatus: () => true
             });
-            
-            if (response.data.statusCode === 1) {
-                this.logInSucceed(response.data.message);
-            } 
 
-        } catch(err) {
-            this.logInFailed(err.response.status);
+        if (response.status === 200) {
+            handleLogInSuccess(response.data.message);
+        } else {
+            handleLogInFailure(response.status);
         }
     }
 
-    logInSucceed(token) {
-        this.props.onSuccess(token);
-    }
+    
 
-    logInFailed(statusCode) {
-        this.setState({ logInFailed : true });
-    }
-    render() {
-        return <Form onSubmit={this.onSubmit}>
+    return (
+        <Form onSubmit={handleLogIn}>
             {
-                this.state.logInFailed ?
+                logInFailed ?
                 <Message negative>
                     <Message.Header>Log in attempt failed</Message.Header>
                     <p>Please try again</p>
                 </Message>
                 : null
             }
-            <Form.Field error={this.state.logInFailed}>
+            <Form.Field error={logInFailed}>
                 <label>Email Address</label>
-                <input placeholder="Email..." name="email" onChange={this.onChange} />
+                <input placeholder="Email..." name="email" onChange={handleEmailChange} />
             </Form.Field>
-            <Form.Field error={this.state.logInFailed}>
+            <Form.Field error={logInFailed}>
                 <label>Password</label>
-                <input placeholder="Password..." name="password" onChange={this.onChange}/>
+                <input placeholder="Password..." name="password" onChange={handlePasswordChange}/>
             </Form.Field>
             <Button type='submit'>Log In</Button>
-            <Button onClick={this.props.onCancel}>Cancel</Button>
+            <Button onClick={props.onCancel}>Cancel</Button>
         </Form>
-    }
+    )
 }

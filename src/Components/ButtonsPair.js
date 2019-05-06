@@ -1,11 +1,11 @@
 import React from 'react';
 import { Container, Button } from 'semantic-ui-react';
 
-export class ButtonsPair extends React.Component {
-    render() {
-        return <Container className="buttons-pair">
-            <Button onClick={this.props.primaryClicked} primary>{this.props.primaryText}</Button>
-            <Button onClick={this.props.secondaryClicked} secondary>{this.props.secondaryText}</Button>
+export default function ButtonsPair(props) {
+    return (
+        <Container className="buttons-pair">
+            <Button onClick={props.primaryClicked} primary>{props.primaryText}</Button>
+            <Button onClick={props.secondaryClicked} secondary>{props.secondaryText}</Button>
         </Container>
-    }
+    )
 }
