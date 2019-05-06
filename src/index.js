@@ -26,6 +26,7 @@ class App extends React.Component {
         this.logInSuccess = this.logInSuccess.bind(this);
         this.loadLocalState = this.loadLocalState.bind(this);
         this.logOut = this.logOut.bind(this);
+        this.signUpSuccess = this.signUpSuccess.bind(this);
     }
 
     loadLocalState() {
@@ -47,6 +48,10 @@ class App extends React.Component {
 
         localStorage.setItem("userToken", info);
         localStorage.setItem("isLoggedIn", "true");
+    }
+
+    signUpSuccess(response) {
+        this.setState({signupFormVisibility: false, mainButtonsVisibility: false, loginFormVisibility: true});
     }
 
     logInClicked(e) {
@@ -102,7 +107,7 @@ class App extends React.Component {
             }
             {
                 this.state.signupFormVisibility ?
-                <SignupForm onCancel={this.cancelClicked}></SignupForm>
+                <SignupForm onCancel={this.cancelClicked} onSuccess={this.signUpSuccess}></SignupForm>
                 : null
             }
         </Container>

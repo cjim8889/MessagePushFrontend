@@ -7,13 +7,15 @@ import Recaptcha from 'react-recaptcha';
 export default function SignupForm(props) {
     const [signUpFailed, setsignUpFailed] = useState(false);
     const [password, setPassword] = useState(null);
-    const [email, setEmail] = useState(null);
+    const [username, setUsername] = useState(null);
     const [recaptchaToken, setrecaptchaToken] = useState(null);
-
+    const [failureMessage, setFailureMessage] = useState(null);
+    const [recaptchaInstance, setRecaptchaInstance] = useState(null);
+    
     const siteKey = "6LcW5KEUAAAAALv-3CULoySYrCK1zKmZjOo0MbAM";
 
-    function handleEmailChange(e) {
-        setEmail(e.target.value);
+    function handleUsernameChange(e) {
+        setUsername(e.target.value);
     }
 
     function handlePasswordChange(e) {
@@ -24,8 +26,30 @@ export default function SignupForm(props) {
         setrecaptchaToken(token);
     }
 
-    function handleSignUpSuccess() {
-        
+    function handleSignUpSuccess(user) {
+        props.onSuccess(user);
+    }
+
+    function handleSignUpFailure(statusCode) {
+
+        recaptchaInstance.reset();
+
+        switch (statusCode) {
+            case 665:
+                setFailureMessage("Invalid Username");
+                break;
+            case 666:
+                setFailureMessage("Duplicate Username");
+                break;
+            case 399:
+                setFailureMessage("Empty Recaptcha Token");
+                break;
+            case 400:
+                setFailureMessage("Invalid Recaptcha Token");
+                break;
+            default:
+                break;
+        }
     }
 
     async function handleSubmit() {
@@ -33,17 +57,18 @@ export default function SignupForm(props) {
 
             let response = await axios.post("http://localhost:5000/api/users", 
             {
-                "Email": email,
+                "Username": username,
                 "Password": password,
                 "RecaptchaToken": recaptchaToken
             })
 
             if (response.status === 201) {
-                console.log(response.data);
+                handleSignUpSuccess(response.data);
             }
 
         } catch (error) {
             setsignUpFailed(true);
+            handleSignUpFailure(error.response.data.statusCode);
         }
     }
 
@@ -53,19 +78,19 @@ export default function SignupForm(props) {
                 signUpFailed ?
                 <Message negative>
                     <Message.Header>Sign up attempt failed</Message.Header>
-                    <p>Please try again</p>
+                    <p>{failureMessage}</p>
                 </Message>
                 : null
             }
             <Form.Field>
-                <label>Email Address</label>
-                <input placeholder="Email..." name="email" onChange={handleEmailChange} />
+                <label>Username</label>
+                <input placeholder="Username..." name="username" onChange={handleUsernameChange} />
             </Form.Field>
             <Form.Field>
                 <label>Password</label>
                 <input placeholder="Password..." name="password" onChange={handlePasswordChange}/>
             </Form.Field>
-            <Recaptcha sitekey={siteKey} className="recaptcha" verifyCallback={handleRecaptcha}></Recaptcha>
+            <Recaptcha sitekey={siteKey} ref={e => setRecaptchaInstance(e)} className="recaptcha" verifyCallback={handleRecaptcha}></Recaptcha>
             <Button type='submit'>Sign up</Button>
             <Button onClick={props.onCancel}>Cancel</Button>
         </Form>

@@ -4,12 +4,12 @@ import axios from 'axios';
 
 
 export default function LoginForm(props) {
-    const [email, setEmail] = useState(null);
+    const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
     const [logInFailed, setLogInFailed] = useState(false);
 
-    function handleEmailChange(e) {
-        setEmail(e.target.value);
+    function handleUsernameChange(e) {
+        setUsername(e.target.value);
     }
 
     function handlePasswordChange(e) {
@@ -29,7 +29,7 @@ export default function LoginForm(props) {
             {
                 crossDomain: true,
                 params : {
-                    email,
+                    username,
                     password
                 },
                 validateStatus: () => true
@@ -55,8 +55,8 @@ export default function LoginForm(props) {
                 : null
             }
             <Form.Field error={logInFailed}>
-                <label>Email Address</label>
-                <input placeholder="Email..." name="email" onChange={handleEmailChange} />
+                <label>Username</label>
+                <input placeholder="Username..." name="username" onChange={handleUsernameChange} />
             </Form.Field>
             <Form.Field error={logInFailed}>
                 <label>Password</label>

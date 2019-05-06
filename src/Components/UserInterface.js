@@ -67,7 +67,7 @@ export default function UserInterface(props) {
                 !user.validate ?
                 <Message negative>
                     <Message.Header>Unvalidated Account</Message.Header>
-                    <p>Please validate your email address</p>
+                    <p>Please validate your account</p>
                     <Button color="blue">Validate</Button>
                 </Message>
                 : null
@@ -77,8 +77,8 @@ export default function UserInterface(props) {
                 <Button floated="right" onClick={props.onLogOut}>Log out</Button>
             </Header>
             <Divider hidden />
-            <Header as="h3">Email</Header>
-            <p>{user.email}</p>
+            <Header as="h3">Username</Header>
+            <p>{user.username}</p>
             <Header as="h3">PushToken</Header>
             <p>{user.pushToken}</p>
             <Header as="h3">AdminToken</Header>
