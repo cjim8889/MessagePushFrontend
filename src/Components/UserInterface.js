@@ -1,50 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Header, Divider, Message, Modal, Input, Icon } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Button, Header, Divider, Message } from 'semantic-ui-react';
+import ModalForm from './ModalForm';
 import axios from 'axios';
 
 
 export default function UserInterface(props) {
     const [user, setUser] = useState({});
-    const [pwdModal, setPwdModal] = useState(false);
-    const [newPwd, setNewPwd] = useState(null);
-    const [changePwdError, setChangePwdError] = useState(false);
+    const [messages, setMessages] = useState([]);
 
-    
+    const msgList = messages.map((msg) => {
+        return (
+            <Message negative={msg.type === 1}>
+                <Message.Header>{msg.text}</Message.Header>
+            </Message>
+        )
+    });
 
-    useEffect(() => {
-        const pullUserInfo = async () => {
-            axios.get("http://localhost:5000/api/users/user", 
-                {
-                    crossDomain: true,
-                    headers : {
-                        "Authorization" : `Bearer ${props.userToken}`
-                    }
-                }).then((response) => {
-                    if (response.status === 200) {
-                        console.log(response.data);
-                        setUser(response.data);
-                    }
-                }).catch((err) => {
-                    // props.onFailed();
-            })
-        }
-
-        pullUserInfo();
-    }, [props.userToken])
-
-    function handlePwdChangeButton() {
-        setPwdModal(true);
+    function handleUserInfoFail() {
+        setMessages([...messages, {type:1, text:"Failed to load user information..."}]);
     }
 
-    function handleModalClose() {
-        setPwdModal(false);
-    }
-    
-    function handlePwdChange(e) {
-        setNewPwd(e.target.value);
-    }
-
-    async function changePassword() {
+    async function changePassword(password) {
 
         axios.get("http://localhost:5000/api/users/user/password/change", 
             {
@@ -53,12 +29,12 @@ export default function UserInterface(props) {
                     "Authorization" : `Bearer ${props.userToken}`
                 },
                 params : {
-                    "password": newPwd,
+                    "password": password,
                 }
             }).then((response) => {
                 props.onLogOut();
             }).catch((err) => {
-                setChangePwdError(true);
+                setMessages([...messages, {type:1, text:"Failed to change password"}]);
         })
     }
 
@@ -104,48 +80,66 @@ export default function UserInterface(props) {
                 </Message>
                 : null
             }
-            {
-                changePwdError ?
-                <Message negative>
-                    <Message.Header>Failed to change password</Message.Header>
-                </Message>
-                : null
-            }                
+            {msgList}           
             <Header as="h1">
             Hi there!
                 <Button floated="right" onClick={props.onLogOut}>Log out</Button>
             </Header>
             <Divider hidden />
-            <Header as="h3">Username</Header>
-            <p>{user.username}</p>
-            <Header as="h3">PushToken</Header>
-            <p>{user.pushToken}</p>
-            <Header as="h3">AdminToken</Header>
-            <p>{user.adminToken}</p>
-            <Header as="h3">Receivers Total</Header>
-            <p>{user.subsribers ? user.subsribers.length : 0}</p>
+            <UserInfo userToken={props.userToken} onFailed={handleUserInfoFail}></UserInfo>
             <Divider hidden />
             <Button onClick={refreshUserToken}>Refresh Token</Button>
+            <ModalForm buttonText="Change Password" modalTitle="Password Change" modalContent="Enter your new password below" submitButtonText="Change" onSubmit={changePassword}></ModalForm>
             <Button color="red" onClick={deleteAccount}>Delete Account</Button>
-            <Modal
-                trigger={<Button onClick={handlePwdChangeButton} color='red' >Change Password</Button>}
-                open={pwdModal}
-                onClose={handleModalClose}
-                basic
-                size='small'
-            >
-                <Header icon='browser' content='Password Change' />
-                <Modal.Content>
-                <h3>Enter your new password below</h3>
-                <Input size='large' type='password' onChange={handlePwdChange}></Input>
-                </Modal.Content>
-                <Modal.Actions>
-                <Button color='green' onClick={changePassword} inverted>
-                    <Icon name='checkmark' /> Change it
-                </Button>
-                </Modal.Actions>
-            </Modal>
         </div>
     )
 
+}
+
+
+
+class UserInfo extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = { user: {} };
+
+        this.pullUserInfo = this.pullUserInfo.bind(this);
+    }
+
+    pullUserInfo() {
+        axios.get("http://localhost:5000/api/users/user", 
+            {
+                crossDomain: true,
+                headers : {
+                    "Authorization" : `Bearer ${this.props.userToken}`
+                }
+            }).then((response) => {
+                if (response.status === 200) {
+                    this.setState({user: response.data});
+                }
+            }).catch((err) => {
+                this.props.onFailed();                    
+        })
+    }
+    
+    componentWillMount() {
+        this.pullUserInfo();
+    }
+
+    render() {
+
+        return (
+            <div>
+                <Header as="h3">Username</Header>
+                <p>{this.state.user.username}</p>
+                <Header as="h3">PushToken</Header>
+                <p>{this.state.user.pushToken}</p>
+                <Header as="h3">AdminToken</Header>
+                <p>{this.state.user.adminToken}</p>
+                <Header as="h3">Receivers Total</Header>
+                <p>{this.state.user.subsribers ? this.state.user.subsribers.length : 0}</p>
+            </div>
+        )
+    }
 }
