@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Header, Divider, Message } from 'semantic-ui-react';
+import { Button, Header, Divider, Message, Modal, Input, Icon } from 'semantic-ui-react';
 import axios from 'axios';
 
 
 export default function UserInterface(props) {
     const [user, setUser] = useState({});
-
+    const [pwdModal, setPwdModal] = useState(false);
+    const [newPwd, setNewPwd] = useState(null);
+    const [changePwdError, setChangePwdError] = useState(false);
 
     
 
@@ -19,6 +21,7 @@ export default function UserInterface(props) {
                     }
                 }).then((response) => {
                     if (response.status === 200) {
+                        console.log(response.data);
                         setUser(response.data);
                     }
                 }).catch((err) => {
@@ -28,7 +31,36 @@ export default function UserInterface(props) {
 
         pullUserInfo();
     }, [props.userToken])
+
+    function handlePwdChangeButton() {
+        setPwdModal(true);
+    }
+
+    function handleModalClose() {
+        setPwdModal(false);
+    }
     
+    function handlePwdChange(e) {
+        setNewPwd(e.target.value);
+    }
+
+    async function changePassword() {
+
+        axios.get("http://localhost:5000/api/users/user/password/change", 
+            {
+                crossDomain: true,
+                headers : {
+                    "Authorization" : `Bearer ${props.userToken}`
+                },
+                params : {
+                    "password": newPwd,
+                }
+            }).then((response) => {
+                props.onLogOut();
+            }).catch((err) => {
+                setChangePwdError(true);
+        })
+    }
 
     async function refreshUserToken() {
         let response = await axios.get("http://localhost:5000/api/users/user/token/refresh",
@@ -64,11 +96,18 @@ export default function UserInterface(props) {
 
         <div className="user-info">
             {
-                !user.validate ?
+                !user.validated ?
                 <Message negative>
                     <Message.Header>Unvalidated Account</Message.Header>
                     <p>Please validate your account</p>
                     <Button color="blue">Validate</Button>
+                </Message>
+                : null
+            }
+            {
+                changePwdError ?
+                <Message negative>
+                    <Message.Header>Failed to change password</Message.Header>
                 </Message>
                 : null
             }                
@@ -88,6 +127,24 @@ export default function UserInterface(props) {
             <Divider hidden />
             <Button onClick={refreshUserToken}>Refresh Token</Button>
             <Button color="red" onClick={deleteAccount}>Delete Account</Button>
+            <Modal
+                trigger={<Button onClick={handlePwdChangeButton} color='red' >Change Password</Button>}
+                open={pwdModal}
+                onClose={handleModalClose}
+                basic
+                size='small'
+            >
+                <Header icon='browser' content='Password Change' />
+                <Modal.Content>
+                <h3>Enter your new password below</h3>
+                <Input size='large' type='password' onChange={handlePwdChange}></Input>
+                </Modal.Content>
+                <Modal.Actions>
+                <Button color='green' onClick={changePassword} inverted>
+                    <Icon name='checkmark' /> Change it
+                </Button>
+                </Modal.Actions>
+            </Modal>
         </div>
     )
 
