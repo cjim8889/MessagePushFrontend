@@ -141,9 +141,9 @@ export function ValidationForm(props) {
                     </Message>
                     : null
                 }
-                <h3>Please enter receiver ID shown in Telegram bot</h3>
+                <h3>Please enter the receiver ID shown in Telegram bot</h3>
                 <Input label="Receiver Id" size='large' type='text' onChange={handleReceiverId} action={{ content: 'Send Challenge Code',onClick: requestValidation }}></Input>
-                <h3>Enter challenge code</h3>
+                <h3>Enter the challenge code</h3>
                 <Input label="Challenge Code" onChange={handleChallengeCode}></Input>
             </Modal.Content>
             <Modal.Actions>

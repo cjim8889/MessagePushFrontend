@@ -92,6 +92,8 @@ class App extends React.Component {
             一行HTTP API调用即可发送讯息到Telegram
             <br/>
             支持一对一,一对多发送
+            <br/>
+            Telegram Bot ID: @Simple_c_bot
             </p>
             <Divider />
             {
