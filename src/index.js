@@ -88,6 +88,10 @@ class App extends React.Component {
             <Header as="h1">TelePush</Header>
             <p>
             An elegant way of pushing your messages.
+            <br/>
+            一行HTTP API调用即可发送讯息到Telegram
+            <br/>
+            支持一对一,一对多发送
             </p>
             <Divider />
             {

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Header, Divider, Message } from 'semantic-ui-react';
+import React, {useState} from 'react';
+import { Button, Header, Divider, Message, TextArea, Form } from 'semantic-ui-react';
 import ModalForm, {ValidationForm} from './ModalForm';
 import axios from 'axios';
 
@@ -135,12 +135,15 @@ export default class UserInterface extends React.Component {
                     <Button floated="right" onClick={this.props.onLogOut}>Log out</Button>
                 </Header>
                 <Divider hidden />
+                <ApiPanel pushToken={this.state.user.pushToken}></ApiPanel>
+                <Divider hidden />
                 <UserInfo user={this.state.user}></UserInfo>
                 <Divider hidden />
                 <ValidationForm userToken={this.props.userToken} onSuccess={this.handleAddReceiverSuccess}></ValidationForm>
                 <Button color='google plus' onClick={this.refreshUserToken}>Refresh Token</Button>
                 <ModalForm buttonText="Change Password" modalTitle="Password Change" modalContent="Enter your new password below" submitButtonText="Change" onSubmit={this.changePassword}></ModalForm>
                 <Button color="red" onClick={this.deleteAccount}>Delete Account</Button>
+
             </div>
         )
     }
@@ -162,4 +165,24 @@ class UserInfo extends React.Component {
             </div>
         )
     }
+}
+
+function ApiPanel(props) {
+    const [message, setMessage] = useState(null);
+
+    return (
+        <div>
+            <Message
+            attached
+            header='Api Panel'
+            content='Api 调用'
+            />
+            <Form className='attached fluid segment'>
+                <TextArea placeholder='消息' style={{ minHeight: 100 }} />
+            <Form.Checkbox inline label='I agree to the terms and conditions' />
+            <Button color='blue'>Submit</Button>
+            </Form>
+        </div>
+
+    )
 }
