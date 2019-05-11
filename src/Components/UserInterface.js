@@ -211,7 +211,7 @@ function ApiPanel(props) {
                     </Header>
                     <Segment attached className="segement-fix"><p>https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}</p></Segment>
                     <Header as='h5' attached>
-                        Curl
+                        CURL
                     </Header>
                     <Segment attached className="segement-fix"><p>curl -X GET -i 'https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}'</p></Segment>
                 </Form.Field>
