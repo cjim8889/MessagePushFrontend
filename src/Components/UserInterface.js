@@ -209,11 +209,11 @@ function ApiPanel(props) {
                     <Header as='h5' attached='top'>
                         HTTP Endpoint
                     </Header>
-                    <Segment padded attached>https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}</Segment>
+                    <Segment attached className="segement-fix"><p>https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}</p></Segment>
                     <Header as='h5' attached>
                         Curl
                     </Header>
-                    <Segment padded attached>curl -X GET -i 'https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}'</Segment>
+                    <Segment attached className="segement-fix"><p>curl -X GET -i 'https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}'</p></Segment>
                 </Form.Field>
                 <Form.Field>
                     <TextArea placeholder='消息' style={{ minHeight: 100 }} onChange={handleMessageInput} />
@@ -221,7 +221,6 @@ function ApiPanel(props) {
                 <Form.Field>
                     <Button color='blue' onClick={handleSend}>发送</Button>
                 </Form.Field>
-
             </Form>
         </div>
 

@@ -22,3 +22,9 @@
 .recaptcha {
     margin-bottom: 1rem;
 }
+
+.segement-fix {
+    height: auto;
+    display: inline-block;    
+    word-wrap: break-word;
+}
