@@ -25,7 +25,7 @@ export default function LoginForm(props) {
     }
 
     async function handleLogIn(e) {        
-        let response = await axios.get("http://localhost:5000/api/users/login", 
+        let response = await axios.get("https://api.oxifus.com/v1.0/users/login", 
             {
                 crossDomain: true,
                 params : {

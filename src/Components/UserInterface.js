@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Header, Divider, Message } from 'semantic-ui-react';
-import ModalForm from './ModalForm';
+import ModalForm, {ValidationForm} from './ModalForm';
 import axios from 'axios';
 
 
@@ -10,8 +10,9 @@ export default class UserInterface extends React.Component {
         super(props);
 
         this.state = {
-            user: {}, 
-            messages: []
+            user: {subscribers: []}, 
+            messages: [],
+            validateStatus: false
         }
 
 
@@ -19,9 +20,12 @@ export default class UserInterface extends React.Component {
         this.changePassword = this.changePassword.bind(this);
         this.refreshUserToken = this.refreshUserToken.bind(this);
         this.pullUserInfo = this.pullUserInfo.bind(this);
+        this.deleteAccount = this.deleteAccount.bind(this);
+        this.handleAddReceiverSuccess = this.handleAddReceiverSuccess.bind(this);
+    
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.pullUserInfo();
     }
     
@@ -30,7 +34,7 @@ export default class UserInterface extends React.Component {
     }
 
     async pullUserInfo() {
-        axios.get("http://localhost:5000/api/users/user", 
+        axios.get("https://api.oxifus.com/v1.0/users/user", 
             {
                 crossDomain: true,
                 headers : {
@@ -47,7 +51,7 @@ export default class UserInterface extends React.Component {
 
     async changePassword(password) {
 
-        axios.get("http://localhost:5000/api/users/user/password/change", 
+        axios.get("https://api.oxifus.com/v1.0/users/user/password/change", 
             {
                 crossDomain: true,
                 headers : {
@@ -64,7 +68,7 @@ export default class UserInterface extends React.Component {
     }
 
     async refreshUserToken() {
-        let response = await axios.get("http://localhost:5000/api/users/user/token/refresh",
+        let response = await axios.get("https://api.oxifus.com/v1.0/users/user/token/refresh",
             {
                 crossDomain: true,
                 headers: {
@@ -82,7 +86,7 @@ export default class UserInterface extends React.Component {
     }
 
     async deleteAccount() {
-        let response = await axios.delete("http://localhost:5000/api/users/user",
+        let response = await axios.delete("https://api.oxifus.com/v1.0/users/user",
         {
             crossDomain: true,
             headers: {
@@ -96,17 +100,23 @@ export default class UserInterface extends React.Component {
         }
     }
 
+    async handleAddReceiverSuccess() {
+        this.pullUserInfo();
+    }
+
+
+
+
     render() {
 
         return (
 
             <div className="user-info">
                 {
-                    !this.state.user.validated ?
+                    this.state.user.subscribers.length === 0 ?
                     <Message negative>
                         <Message.Header>Unvalidated Account</Message.Header>
-                        <p>Please validate your account</p>
-                        <Button color="blue">Validate</Button>
+                        <p>Please validate your account by adding at least one receiver</p>
                     </Message>
                     : null
                 }
@@ -127,7 +137,8 @@ export default class UserInterface extends React.Component {
                 <Divider hidden />
                 <UserInfo user={this.state.user}></UserInfo>
                 <Divider hidden />
-                <Button onClick={this.refreshUserToken}>Refresh Token</Button>
+                <ValidationForm userToken={this.props.userToken} onSuccess={this.handleAddReceiverSuccess}></ValidationForm>
+                <Button color='google plus' onClick={this.refreshUserToken}>Refresh Token</Button>
                 <ModalForm buttonText="Change Password" modalTitle="Password Change" modalContent="Enter your new password below" submitButtonText="Change" onSubmit={this.changePassword}></ModalForm>
                 <Button color="red" onClick={this.deleteAccount}>Delete Account</Button>
             </div>
@@ -147,7 +158,7 @@ class UserInfo extends React.Component {
                 <Header as="h3">AdminToken</Header>
                 <p>{this.props.user.adminToken}</p>
                 <Header as="h3">Receivers Total</Header>
-                <p>{this.props.user.subsribers ? this.props.user.subsribers.length : 0}</p>
+                <p>{this.props.user.subscribers.length}</p>
             </div>
         )
     }
