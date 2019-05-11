@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Header, Divider } from 'semantic-ui-react';
+import { Container, Header, Divider, Icon } from 'semantic-ui-react';
 import ButtonsPair from './Components/ButtonsPair'; 
 import LoginForm from './Components/LoginForm';
 import UserInterface from './Components/UserInterface';
@@ -84,16 +84,20 @@ class App extends React.Component {
 
 
     render() {
-        return <Container text className="main">
+        return <Container text className="main-container">
             <Header as="h1">TelePush</Header>
             <p>
             An elegant way of pushing your messages.
+            <br/>
             <br/>
             一行HTTP API调用即可发送讯息到Telegram
             <br/>
             支持一对一,一对多发送
             <br/>
+            <br/>
             Telegram Bot ID: @Simple_c_bot
+            <br/>
+            Github: <a href="https://github.com/cjim8889/MsgPush"><Icon name="github"></Icon>MsgPush</a>
             </p>
             <Divider />
             {
