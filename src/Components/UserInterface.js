@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Button, Header, Divider, Message, TextArea, Form } from 'semantic-ui-react';
+import { Button, Header, Divider, Message, TextArea, Form, Segment } from 'semantic-ui-react';
 import ModalForm, {ValidationForm} from './ModalForm';
 import axios from 'axios';
 
@@ -168,8 +168,28 @@ class UserInfo extends React.Component {
 }
 
 function ApiPanel(props) {
-    const [message, setMessage] = useState(null);
+    const [message, setMessage] = useState('');
+    const [msg, setMsg] = useState(null);
 
+    function handleMessageInput(e) {
+        setMessage(e.target.value);
+    }
+
+    async function handleSend() {
+        axios.get("https://api.oxifus.com/v1.0/push",
+            {
+                crossDomain: true,
+                params: {
+                    't': props.pushToken,
+                    'm': message
+                },
+                validateStatus: () => true
+            }).then((response) => {
+                setMsg("Message Sent");
+            }).catch((err) => {
+                setMsg("Failed");
+            })
+    }
     return (
         <div>
             <Message
@@ -177,10 +197,31 @@ function ApiPanel(props) {
             header='Api Panel'
             content='Api 调用'
             />
-            <Form className='attached fluid segment'>
-                <TextArea placeholder='消息' style={{ minHeight: 100 }} />
-            <Form.Checkbox inline label='I agree to the terms and conditions' />
-            <Button color='blue'>Submit</Button>
+            <Form className='attached segment'>
+                {
+                    msg ?
+                    <Message>
+                        <Message.Header>{msg}</Message.Header>
+                    </Message>
+                    : null
+                }
+                <Form.Field>
+                    <Header as='h5' attached='top'>
+                        HTTP Endpoint
+                    </Header>
+                    <Segment padded attached>https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}</Segment>
+                    <Header as='h5' attached>
+                        Curl
+                    </Header>
+                    <Segment padded attached>curl -X GET -i 'https://api.oxifus.com/v1.0/push?t={props.pushToken}&m={encodeURI(message)}'</Segment>
+                </Form.Field>
+                <Form.Field>
+                    <TextArea placeholder='消息' style={{ minHeight: 100 }} onChange={handleMessageInput} />
+                </Form.Field>
+                <Form.Field>
+                    <Button color='blue' onClick={handleSend}>发送</Button>
+                </Form.Field>
+
             </Form>
         </div>
 
