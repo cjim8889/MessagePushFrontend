@@ -87,7 +87,7 @@ class App extends React.Component {
         return <Container text className="main-container">
             <Header as="h1">TelePush</Header>
             <p>
-            An elegant way of pushing your messages.
+            An elegant way of delivering your messages.
             <br/>
             <br/>
             一行HTTP API调用即可发送讯息到Telegram
